@@ -44,11 +44,36 @@ async function run() {
             res.send(result);
         });
 
-        app.delete('/users/:id', async(req, res)=>{
+        app.get('/users/:id', async (req, res) => {
             const id = req.params.id;
             console.log(id)
-            const query = {_id: new ObjectId(id)};
-            
+            const query = { _id: new ObjectId(id) };
+            const result = await usersCollection.findOne(query);
+            res.send(result)
+
+        })
+
+        app.put('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const user = req.body
+            // console.log(updateUser)
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updatedUser = {
+                $set: {
+                    name: user.name,
+                    email: user.email
+                }
+            }
+            const result = await usersCollection.updateOne(filter, updatedUser, options)
+            res.send(result)
+
+        })
+
+        app.delete('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id)
+            const query = { _id: new ObjectId(id) };
             const result = await usersCollection.deleteOne(query);
             res.send(result)
         })
