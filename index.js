@@ -5,7 +5,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 // middleware
 app.use(cors());
-app.unsubscribe(express.json())
+app.use(express.json())
 
 // shamimweb78
 // wqss77hTGLZSNn1w
@@ -24,18 +24,29 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
+        const database = client.db("usersDB");
+        const usersCollection = database.collection("users");
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
         // Send a ping to confirm a successful connection
+
+        app.post('/users', async(req,res)=>{
+            const user = req.body;
+            console.log(user)
+            const result = await usersCollection.insertOne(user);
+            res.send(result);
+        });
+
+
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
-        await client.close();
+        // await client.close();
     }
 }
 
-run().catch(console.dir);
+run().catch(console.log);
 
 app.get('/', (req, res) => {
     res.send('Simple Crud in running')
@@ -44,3 +55,14 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`)
 })
+
+
+// functions 
+
+// async function run(){
+
+// }
+
+// const run = async()=>{
+
+// }
